@@ -27,7 +27,11 @@ namespace Inventory_project
                     }
                     else
                     {
-                        Console.Write("[" + Inventory[i, j] + "] "); //displays the current item occupying it
+                        Item item = (Item)Inventory[i, j];
+                        if (item is Item)
+                        {
+                            Console.Write("[" +  item.CurrentStack + " " + item.Name + "] "); //displays the current item occupying it
+                        }
                     }
                 }
                 Console.WriteLine(); // new line after each row
@@ -48,10 +52,9 @@ namespace Inventory_project
                             int toAdd = Math.Min(newItem.CurrentStack, stackableAmount); //checks for how many items can fit in a stack
                             slotItem.CurrentStack += toAdd; //adds to the existing stack
                             newItem.CurrentStack -= toAdd; // removes added amount, reducing the amount left to be placed in another slot if needed
-                            Console.WriteLine($"Stacked {toAdd} {newItem.Name} in slot ({i},{j}). New stack: {slotItem.CurrentStack}/{slotItem.MaxStack}");
+                            //Console.WriteLine($"Stacked {toAdd} {newItem.Name} in slot ({i},{j}). New stack: {slotItem.CurrentStack}/{slotItem.MaxStack}");
 
-                            if (newItem.CurrentStack == 0) return; // All items stacked, exit
-
+                            if (newItem.CurrentStack == 0) return; // all items stacked, exit
                         }
                     }
                 }
@@ -64,7 +67,7 @@ namespace Inventory_project
                     if (Inventory[i, j] == null) //if slot is empty
                     {
                         Inventory[i, j] = newItem; //add the new item
-                        Console.WriteLine($"Placed {newItem.Name} in slot ({i},{j}) with stack: {newItem.CurrentStack}/{newItem.MaxStack}"); //displays it
+                        //Console.WriteLine($"Placed {newItem.Name} in slot ({i},{j}) with stack: {newItem.CurrentStack}/{newItem.MaxStack}"); //displays it
                         return;
                     }
                 }
@@ -88,7 +91,6 @@ namespace Inventory_project
                         Console.WriteLine($"Slot is already empty at row: {x + 1}, column: {y + 1}");
                         return;
                     }
-
                 }
             }
         }
@@ -128,7 +130,7 @@ namespace Inventory_project
                 {
                     if (Inventory[i, j] != null) //checks for when the slot is not empty
                     {
-                        list.Add(Inventory[i, j]);
+                        list.Add(Inventory[i, j]);//ads item to the list
                     }
 
                 }
@@ -140,7 +142,7 @@ namespace Inventory_project
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    Inventory[i, j] = null;
+                    Inventory[i, j] = null; //sets the position to empty
                 }
             }
 
@@ -160,7 +162,7 @@ namespace Inventory_project
 
         public void ShowTotalSlots ()
         {
-            Console.WriteLine(Inventory.Length);
+            Console.WriteLine(Inventory.Length); //displays the length of array, total slots
         }
     }
 }

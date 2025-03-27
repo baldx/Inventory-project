@@ -21,17 +21,19 @@ namespace Inventory_project
             {
                 for (int j = 0; j < 9; j++) // columns
                 {
-                    if (Inventory[i, j] == null) //checks for when the slot is empty
+                    if (Inventory[i, j] == null || (Inventory[i, j] is Item item && (item.CurrentStack <= 0 || (item is Tool tool && tool.Durability <= 0)))) //checks for when the slot is empty, item has current stack of 0 and tool that has durability 0
                     {
+                        Inventory[i, j] = null;
                         Console.Write("[ ] "); // shows empty slot
                     }
                     else
                     {
-                        Item item = (Item)Inventory[i, j];
-                        if (item is Item)
+                        Item ExistingItem = (Item)Inventory[i, j];
+                        if (ExistingItem is Item)
                         {
-                            Console.Write("[" +  item.CurrentStack + " " + item.Name + "] "); //displays the current item occupying it
+                            Console.Write("[" + ExistingItem.CurrentStack + " " + ExistingItem.Name + "] "); //displays the current item occupying it
                         }
+
                     }
                 }
                 Console.WriteLine(); // new line after each row

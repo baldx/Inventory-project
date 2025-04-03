@@ -8,7 +8,7 @@ namespace Inventory_project
 {
     internal class Consumable : Item
     {
-        public Consumable (int id, string name, int currentStack, string category = "Consumable", int maxStack = 1 ) 
+        public Consumable (int id, string name, int currentStack, string category = "Consumable", int maxStack = 16 ) 
             :base(id, category, name, maxStack, currentStack)
         {
 

@@ -10,7 +10,7 @@ namespace Inventory_project
     {
         public int Durability; //define the tools durability
 
-        public Tool(int id, string name, int durability, int currentStack, string category = "Tool", int maxStack = 1) //define tool
+        public Tool(int id, string name, int durability, int currentStack = 1, string category = "Tool", int maxStack = 1) //define tool
             :base (id, category, name, maxStack, currentStack)
         {
             this.Durability = durability;

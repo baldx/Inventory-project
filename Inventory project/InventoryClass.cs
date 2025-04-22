@@ -76,26 +76,25 @@ namespace Inventory_project
             }
         }
 
-        public void DropItem(int x, int y)
+        public void DropItem(Item itemToDrop)
         {
             for (int i = 0; i < 4; i++) // rows
             {
                 for (int j = 0; j < 9; j++) // columns
                 {
-                    if (Inventory[i, j] != null && Inventory[x, y] != null) //checks for when the slot is not empty
+                    if (Inventory[i, j] is Item currentItem && currentItem.Name == itemToDrop.Name) //if item equals to current item and name equals to chosen item name drop
                     {
-                        Inventory[i, j] = null; //finds the first empty slots and replaces it with an empty slot
-                        Console.WriteLine("Item succesfully dropped");
-                        return; //exit the whole loop
-                    }
-                    else if (Inventory[i, j] == null && Inventory[x, y] == null)
-                    {
-                        Console.WriteLine($"Slot is already empty at row: {x + 1}, column: {y + 1}");
+                        Inventory[i, j] = null; //removes item from inventory
                         return;
                     }
                 }
             }
+
+            Console.WriteLine($"{itemToDrop.Name} not found in inventory.");
         }
+
+
+
 
         public void ChangeItemPositionTo(int OldX, int OldY, int NewX, int NewY)
         {

@@ -11,452 +11,403 @@ namespace Inventory_project
     {
         internal void Run()
         {
-            InventoryClass inventory = new InventoryClass(); //define an inventory
-            Tool pickaxe = new Tool(69, "Wood Pickaxe", 64); //creates a new tool
-            Block diamondBlock = new Block(23, "Diamond Block", 20, 1); //creates a new block
+            string[] menuOptions = { //options for menu
+            "1. Use item",
+            "2. Pick up item",
+            "3. Drop item",
+            "4. Sort inventory",
+            "5. Exit inventory"
+        };
 
-            bool isRunning = true;
-            string[] options =
-            {
-                "1. Use item",
-                "2. Pick up item",
-                "3. Drop item",
-                "4. Sort inventory",
-                "5. Exit inventory"
-            }; //options for user
+            object[] itemsForPickingUp = {
+            //tools
+            new Tool(68, "Diamond Sword", 1256),
+            new Tool(67, "Hyperion", 9999),
+            new Tool(66, "Dark Claymore", 700),
+            new Tool(69, "Emerald Pickaxe", 1500),
+            new Tool(70, "Dragon Axe", 2300),
+            new Tool(71, "Magic Wand", 5000),
+            //consumables
+            new Consumable(101, "Strength Potion", 1),
+            new Consumable(102, "Carrot Cake", 1),
+            new Consumable(103, "Mana Potion", 1),
+            new Consumable(104, "Golden Apple", 3),
+            new Consumable(105, "Elixir of Speed", 5),
+            //blocks
+            new Block(22, "Bedrock", 9999, 44),
+            new Block(23, "Obsidian", 1000, 55),
+            new Block(24, "Gold Block", 200, 62),
+            new Block(25, "Diamond Block", 500, 12)
+        };
 
-            object[] itemsForPickingUp =
-            {
-                //  items
-                new Tool(68, "Diamond Sword", 1256),
-                new Consumable(101, "Strength Potion", 1),
-                new Consumable(102, "Carrot Cake", 1),
-                new Tool(67, "Hyperion", 9999),
-                new Tool(66, "Dark Claymore", 700),
-                new Block(22, "Bedrock", 9999, 44),
+            //initialize inventory and starting items
+            InventoryClass inventory = new InventoryClass();
+            Tool pickaxe = new Tool(69, "Wood Pickaxe", 64);
+            Block diamondBlock = new Block(23, "Diamond Block", 20, 1);
 
-                //  tools
-                new Tool(69, "Emerald Pickaxe", 1500),
-                new Tool(70, "Dragon Axe", 2300),
-                new Tool(71, "Magic Wand", 5000),
-
-                //  consumables
-                new Consumable(103, "Mana Potion", 1),
-                new Consumable(104, "Golden Apple", 3),
-                new Consumable(105, "Elixir of Speed", 5),
-
-                //  blocks
-                new Block(23, "Obsidian", 1000, 55),
-                new Block(24, "Gold Block", 200, 62),
-                new Block(25, "Diamond Block", 500, 12)
-            };
-
-            for (int i = 0; i < 256; i++) //for loop to add a dirt block
+            //add 256 dirt blocks to inventory
+            for (int i = 0; i < 256; i++)
             {
                 inventory.PickUpItem(new Block(0, "Dirt block", 5, 1));
             }
 
-
+            //add items
             inventory.PickUpItem(pickaxe);
             inventory.PickUpItem(diamondBlock);
 
-
-
-
-
-            while (isRunning) //logic to run the program
+            //mMain program loop
+            bool isRunning = true;
+            while (isRunning)
             {
-                StartingUI();
+                DisplayMenuAndHandleInput(inventory, ref isRunning); //call function and takes inventory and reference for isRunning variable as parameters
             }
-
-            void StartingUI() //User interface for the program
-            {
-                inventory.Display(); //display inventory
-
-                foreach (string option in options) //display options from the array
-                {
-                    Console.WriteLine(option);
-                }
-
-                string input = Convert.ToString(Console.ReadLine()); //get user input
-
-                if (input == "1") //if user chose option 1
-                {
-                    bool isTrue = true;
-                    while (isTrue)
-                    {
-                        Console.Clear(); //clear console
-                        Console.WriteLine("Choose the item you want to use!");
-                        int index = 1; //defines an index
-
-                        List<Item> selectableItems = new(); //creates a list to map user input to inventory items
-
-                        foreach (Item slot in inventory.Inventory) //for each item in inventory
-                        {
-                            if (slot != null) //if item is item, not an empty array
-                            {
-
-                                Console.WriteLine($"{index}. {slot.CurrentStack} {slot.Name}"); //display index, current stack and name of item
-                                selectableItems.Add(slot);
-                                index++; //increment index
-                            }
-
-                        }
-                        Console.WriteLine("Enter X to exit");
-
-                        string useItemInput = Console.ReadLine();
-
-                        if (useItemInput == "X" || useItemInput == "x") //logic to exit the action
-                        {
-                            isTrue = false;
-                            return;
-                        }
-
-                        if (int.TryParse(useItemInput, out int selectedIndex) &&
-                            selectedIndex > 0 && selectedIndex <= selectableItems.Count)
-                        {
-                            Item selectedItem = selectableItems[selectedIndex - 1]; //selected item is equals to the selected item from the array
-
-                            Console.Clear();
-
-                            if (selectedItem is Block block)
-                            {
-                                Console.WriteLine("How many blocks do u want to place?");
-                                string userInput = Console.ReadLine(); //get user input
-
-
-                                if (int.TryParse(userInput, out int amount)) //returns bool after parsing user input
-                                {
-                                    if (block.CurrentStack >= amount) // compare the parsed integer with CurrentStack
-                                    {
-                                        block.CurrentStack -= amount; // subtract amount from CurrentStack
-                                        Console.WriteLine($"You used {amount} {block.Name}. Remaining: {block.CurrentStack}");
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Not enough blocks available.");
-                                    }
-                                }
-                            }
-                            else if (selectedItem is Tool tool)
-                            {
-                                Console.WriteLine("How many times to do u want to use this tool:");
-                                Console.WriteLine($"Current durability: {tool.Durability}");
-                                string userInput = Console.ReadLine(); //get user input
-
-
-                                if (int.TryParse(userInput, out int amount)) //returns bool after parsing user input
-                                {
-                                    if (tool.Durability >= amount) // compare the parsed integer with CurrentStack
-                                    {
-                                        tool.Durability -= amount; // subtract amount from CurrentStack
-                                        Console.WriteLine($"You swung the {tool.Name}!, current durability: {tool.Durability}");
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Cant use the pickaxe that many times!");
-                                    }
-                                }
-                            }
-                            else if (selectedItem is Consumable consumable)
-                            {
-                                Console.WriteLine($"Consumed {consumable.Name}");
-                            }
-                            else
-                            {
-                                Console.WriteLine($"You used {selectedItem.Name}!");
-                            }
-
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid selection. Try again.");
-                        }
-
-
-                        Console.ReadLine();
-                    }
-                    
-                }
-                else if (input == "2")
-                {
-                    Console.Clear();
-
-                    List<Item> selectableItems; //creates a list to map user input to inventory items
-                    int indexList;
-
-
-                    bool isTrue = true;
-
-                    while (isTrue)
-                    {
-
-                        indexList = 1;
-                        selectableItems = new();
-
-                        foreach (Item item in itemsForPickingUp) //for each item in inventory
-                        {
-                            if (item != null) //if item is item, not an empty array
-                            {
-
-                                Console.WriteLine($"{indexList}. {item.CurrentStack} {item.Name}"); //display index, current stack and name of item
-                                selectableItems.Add(item);
-                                indexList++; //increment index
-                            }
-
-                        }
-                        Console.WriteLine("Enter X to go back");
-
-                        string useItemInput = Console.ReadLine();
-
-                        if (useItemInput == "x" || useItemInput == "X") //logic to exit program
-                        {
-                            isTrue = false;
-                        }
-
-                        if (int.TryParse(useItemInput, out int selectedIndex) &&
-                        selectedIndex > 0 && selectedIndex <= selectableItems.Count)
-                        {
-                            Item selectedItem = selectableItems[selectedIndex - 1]; //selects the item from the list
-
-
-                            Console.Clear();
-
-                            if (selectedItem is Block block)
-                            {
-                                bool isTruee = true; //add variable for loop to true
-                                while (isTruee)//while true
-                                {
-                                    Console.Clear();
-                                    Console.WriteLine("How many blocks do u want to pick up?");
-                                    Console.WriteLine($"Current stack {block.CurrentStack}/{block.MaxStack}");
-                                    string userInput = Console.ReadLine(); //get user input
-
-
-                                    if (int.TryParse(userInput, out int amount)) //returns bool after parsing user input
-                                    {
-                                        if (block.CurrentStack >= amount) // compare the parsed integer with CurrentStack
-                                        {
-                                            block.CurrentStack -= amount;  // subtract amount from CurrentStack
-                                            Block pickedBlock = new Block(block.Id, block.Name, block.BlockResistance, amount);//create new block with the amount picked up
-                                            Console.WriteLine($"You picked up {amount} {block.Name}. Remaining: {block.CurrentStack}"); //display item picked up
-
-                                            if (block.CurrentStack == 0) //if blocks are 0
-                                            {
-                                                itemsForPickingUp = itemsForPickingUp.Where(item => item != block).ToArray(); // remove the block from the list
-                                                isTruee = false;
-                                            }
-
-                                            inventory.PickUpItem(pickedBlock); //pickup item
-                                            isTruee = false; //sets loop to false
-                                        }
-                                        else //display error 
-                                        {
-                                            Console.WriteLine("Not enough blocks available. Press any key to try again");
-                                            Console.WriteLine($"Current stack {block.CurrentStack}/{block.MaxStack}");
-                                            Console.ReadLine();
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            else if (selectedItem is Tool tool)
-                            {
-                                Tool pickedTool = new Tool(tool.Id, tool.Name, tool.Durability);//create new tool with the selectoed tool
-                                itemsForPickingUp = itemsForPickingUp.Where(item => item != tool).ToArray(); // remove the tool from the list
-                                inventory.PickUpItem(pickedTool); //add tool to inventory
-                                Console.WriteLine($"{pickedTool.Name} Has been picked up. Press any key to return to inventory");
-                            }
-                            
-                            else if (selectedItem is Consumable consumable)
-                            {
-                                bool isTruee = true; //add variable for loop to true
-                                while (isTruee) //while true
-                                {
-                                    Console.Clear();
-                                    Console.WriteLine("How many consumables do you want to pick up?");
-                                    Console.WriteLine($"Current stack {consumable.CurrentStack}/{consumable.MaxStack}");
-                                    string userInput = Console.ReadLine(); //get user input
-
-                                    if (int.TryParse(userInput, out int amount)) //returns bool after parsing user input
-                                    {
-                                        if (consumable.CurrentStack >= amount) // compare the parsed integer with CurrentStack
-                                        {
-                                            consumable.CurrentStack -= amount;  // subtract amount from CurrentStack
-                                            Consumable pickedConsumable = new Consumable(consumable.Id, consumable.Name, amount); //create new consumable with the amount picked up
-                                            Console.WriteLine($"You picked up {amount} {consumable.Name}. Remaining: {consumable.CurrentStack}"); //display item picked up
-
-                                            if (consumable.CurrentStack == 0) //if no consumables left
-                                            {
-                                                itemsForPickingUp = itemsForPickingUp.Where(item => item != consumable).ToArray(); // remove the consumable from the list
-                                                isTruee = false;
-                                            }
-
-                                            inventory.PickUpItem(pickedConsumable); //pickup item
-                                            isTruee = false; //sets loop to false
-                                        }
-                                        else //display error 
-                                        {
-                                            Console.WriteLine("Not enough consumables available. Press any key to try again");
-                                            Console.WriteLine($"Current stack {consumable.CurrentStack}/{consumable.MaxStack}");
-                                            Console.ReadLine();
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("Something went wrong. Try again");
-                            }
-
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid selection. Try again.");
-                        }
-
-                        Console.ReadLine();
-                        Console.Clear();
-
-                    }
-                    
-                }
-
-                else if (input == "3")
-                {
-                    bool isTrue = true;
-
-                    while (isTrue) //while loop to not restard program
-                    {
-                        Console.Clear();
-                        Console.WriteLine("Choose the item you want to drop:");
-                        int index = 1;
-
-                        List<Item> selectableItems = new(); //creates new list
-
-                        foreach (Item slot in inventory.Inventory) //displays all items in inventory
-                        {
-                            if (slot != null)
-                            {
-                                Console.WriteLine($"{index}. {slot.CurrentStack} {slot.Name}");
-                                selectableItems.Add(slot);
-                                index++;
-                            }
-                        }
-
-                        if (selectableItems.Count == 0) //if inventory is empty
-                        {
-                            Console.WriteLine("Inventory is empty. Press any key to return.");
-                            Console.ReadLine();
-                            return;
-                        }
-
-                        Console.WriteLine("Enter X to return");
-                        string dropInput = Console.ReadLine();
-
-                        if (dropInput == "x" || dropInput == "X") //to exit and return to start
-                        {
-                            isTrue = false;
-                            return;
-                        }
-
-                        if (int.TryParse(dropInput, out int selectedIndex) &&
-                            selectedIndex > 0 && selectedIndex <= selectableItems.Count) //logic to select user input
-                        {
-                            Item selectedItem = selectableItems[selectedIndex - 1]; //item selected is 1 less of the selected index in array
-
-                            Console.Clear();
-
-                            if (selectedItem is Block block) //if selected item is block
-                            {
-                                Console.WriteLine("How many blocks do you want to drop?");
-                                Console.WriteLine($"Current stack: {block.CurrentStack}"); //display some text
-                                string amountInput = Console.ReadLine();
-
-                                if (int.TryParse(amountInput, out int amount) && amount > 0) //if amount is bigger than 0
-                                {
-                                    if (block.CurrentStack >= amount)
-                                    {
-                                        block.CurrentStack -= amount; //removes total amount
-                                        Console.WriteLine($"Dropped {amount} {block.Name}. Remaining: {block.CurrentStack}");
-
-                                        if (block.CurrentStack == 0) //if stack is 0
-                                        {
-                                            inventory.DropItem(block); //deletes item
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Not enough to drop that amount.");
-                                    }
-                                }
-                            }
-                            else if (selectedItem is Tool tool)
-                            {
-                                Console.WriteLine($"Dropped {tool.Name}.");
-                                inventory.DropItem(tool); //delete item
-                            }
-                            else if (selectedItem is Consumable consumable)
-                            {
-                                Console.WriteLine("How many do you want to drop?");
-                                Console.WriteLine($"Current stack: {consumable.CurrentStack}"); //display text
-                                string amountInput = Console.ReadLine();
-
-                                if (int.TryParse(amountInput, out int amount) && amount > 0) //if amount is more than 0
-                                {
-                                    if (consumable.CurrentStack >= amount) //currentstack is more than amount
-                                    {
-                                        consumable.CurrentStack -= amount;
-                                        Console.WriteLine($"Dropped {amount} {consumable.Name}. Remaining: {consumable.CurrentStack}");
-
-                                        if (consumable.CurrentStack == 0)//if stack is 0
-                                        {
-                                            inventory.DropItem(consumable); //delete item
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Not enough to drop that amount.");
-                                    }
-                                }
-                            }
-
-                            Console.WriteLine("Press any key to continue...");
-                            Console.ReadLine();
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid input. Try again.");
-                            Console.ReadLine();
-                        }
-                    }
-                }
-                else if (input == "4")
-                {
-                    Console.Clear();
-                    inventory.SortInventoryByName();
-                }
-                else if (input == "5")
-                {
-                    Environment.Exit(0);
-                }
-            }
-
-
-
-
-            //inventory.PickUpItem(pickaxe);
-            //inventory.Display();
-            //inventory.ChangeItemPositionTo(0, 0, 2, 8);
-            //inventory.SortInventoryByName();
-            //inventory.Display();
-
-
-            //Consumable NightVision = new Consumable(1, "Potion of Night vision");
-            //inventory.PickUpItem(NightVision);
-            //inventory.SortInventoryByName();
-            //inventory.Display();
-
         }
+
+        //displays the main menu and processes user input
+        void DisplayMenuAndHandleInput(InventoryClass inventory, ref bool isRunning) //takes inventory and reference of bool as parameter
+        {
+            Console.Clear();
+            inventory.Display();
+            foreach (string option in menuOptions) //display option selections
+            {
+                Console.WriteLine(option);
+            }
+
+            string input = Console.ReadLine();
+            switch (input) //add logic to get user input
+            {
+                case "1":
+                    HandleUseItem(inventory);
+                    break;
+                case "2":
+                    HandlePickUpItem(inventory);
+                    break;
+                case "3":
+                    HandleDropItem(inventory);
+                    break;
+                case "4":
+                    Console.Clear();
+                    inventory.SortInventoryByName(); //sorts inventory
+                    break;
+                case "5":
+                    isRunning = false;
+                    Environment.Exit(0); //exits program
+                    break;
+                default: //defualts to this after not getting any specified input
+                    Console.WriteLine("Invalid input. Press any key to continue...");
+                    Console.ReadLine();
+                    break;
+            }
+        }
+
+        //handles the "use item" menu option
+        void HandleUseItem(InventoryClass inventory)
+        {
+            Item selectedItem = SelectItemFromInventory(inventory, "Choose the item you want to use:");
+            if (selectedItem == null) return;
+
+            Console.Clear();
+            if (selectedItem is Block block)
+            {
+                HandleBlockUsage(inventory, block);
+            }
+            else if (selectedItem is Tool tool)
+            {
+                Console.WriteLine($"Used {tool.Name}.");
+                inventory.DropItem(tool);
+                PauseAndContinue();
+            }
+            else if (selectedItem is Consumable consumable)
+            {
+                HandleConsumableUsage(inventory, consumable);
+            }
+        }
+
+        //handles the "Pick up item" menu option
+        void HandlePickUpItem(InventoryClass inventory)
+        {
+            bool isTrue = true;
+            while (isTrue)
+            {
+                Item selectedItem = SelectItemFromList(itemsForPickingUp, "Choose the item you want to pick up:"); //gets an item that is selected
+                if (selectedItem == null) //if item doesnt exist return false
+                {
+                    isTrue = false;
+                    continue;
+                }
+
+                Console.Clear();
+                if (selectedItem is Block block) //if item is block handle block logic
+                {
+                    HandleBlockPickup(inventory, block);
+                }
+                else if (selectedItem is Tool tool) //if item is tool, handle tool 
+                {
+                    Tool pickedTool = new Tool(tool.Id, tool.Name, tool.Durability);
+                    itemsForPickingUp = itemsForPickingUp.Where(item => item != tool).ToArray(); //removes item from list
+                    inventory.PickUpItem(pickedTool); //picks up item
+                    Console.WriteLine($"{pickedTool.Name} Has been picked up. Press any key to return to inventory");
+                    PauseAndContinue();
+                }
+                else if (selectedItem is Consumable consumable) //if item is consumable, handle consumable logic
+                {
+                    HandleConsumablePickup(inventory, consumable);
+                }
+            }
+        }
+
+        // Handles the "drop item" menu option
+        void HandleDropItem(InventoryClass inventory)
+        {
+            Item selectedItem = SelectItemFromInventory(inventory, "Choose the item you want to drop:"); //selects item
+            if (selectedItem == null) return; //return nothing if item doesnt exist
+
+            Console.Clear();
+            if (selectedItem is Block block) //if item is block, run HandleStackableItemDrop
+            {
+                HandleStackableItemDrop(inventory, block, "block");
+            }
+            else if (selectedItem is Tool tool)//if item is block drop tool with class
+            {
+                Console.WriteLine($"Dropped {tool.Name}.");
+                inventory.DropItem(tool);
+                PauseAndContinue();
+            }
+            else if (selectedItem is Consumable consumable) //if item is block, run HandleStackableItemDrop
+            {
+                HandleStackableItemDrop(inventory, consumable, "consumable");
+            }
+        }
+
+        //displays a list of items from inventory or list and returns the selected item
+        Item SelectItemFromList(object[] items, string prompt) //takes object with arrays and string as input
+        {
+            bool isSelecting = true;
+            while (isSelecting)
+            {
+                Console.Clear();
+                Console.WriteLine(prompt);
+                List<Item> selectableItems = new(); //creates a new list
+                int index = 1;
+
+                foreach (Item item in items) //logic to display all items with their respective index and add them to list
+                {
+                    if (item != null) //if item exists
+                    {
+                        Console.WriteLine($"{index}. {item.CurrentStack} {item.Name}");
+                        selectableItems.Add(item); //adds item to the list
+                        index++;
+                    }
+                }
+
+                if (selectableItems.Count == 0) //if items count is 0 then display error message
+                {
+                    Console.WriteLine("No items available. Press any key to return.");
+                    Console.ReadLine();
+                    return null;
+                }
+
+                Console.WriteLine("Enter X to return");
+                string input = Console.ReadLine();
+
+                if (!CheckGoBackInput(input)) //logic to check if user wants to return to previous page
+                    return null;
+
+                if (int.TryParse(input, out int selectedIndex) && selectedIndex > 0 && selectedIndex <= selectableItems.Count) //logic to check if item is in bounds and if count is not under 0
+                {
+                    return selectableItems[selectedIndex - 1]; //gets the current selected index of the list
+                }
+
+                Console.WriteLine("Invalid input. Press any key to try again.");
+                Console.ReadLine();
+            }
+            return null;
+        }
+
+        //displays inventory items and returns the selected item
+        Item SelectItemFromInventory(InventoryClass inventory, string prompt)
+        {
+            return SelectItemFromList(inventory.Inventory, prompt);
+        }
+
+        //gets a valid amount input from the user for stackable items
+        int? GetAmountInput(int currentStack, int maxStack, string itemType, string action)
+        {
+            bool isSelecting = true;
+            while (isSelecting) //when method is specified, invokes a while loop
+            {
+                Console.Clear();
+                Console.WriteLine($"How many {itemType}s do you want to {action}?");
+                Console.WriteLine($"Current stack: {currentStack}/{maxStack}");
+                Console.WriteLine("Enter X to return"); //some UI
+
+                string input = Console.ReadLine(); //get user input
+
+                if (!CheckGoBackInput(input)) return null; //checks if user wants to go back
+
+                if (int.TryParse(input, out int amount) && amount > 0) //returns amount and exists loop if its specified and more than 0
+                {
+                    return amount;
+                }
+
+                Console.WriteLine("Invalid input. Press any key to try again.");
+                Console.ReadLine();
+            }
+            return null; //returns null
+        }
+
+        //handles block usage (placing blocks)
+        void HandleBlockUsage(InventoryClass inventory, Block block)
+        {
+            int? amount = GetAmountInput(block.CurrentStack, block.MaxStack, "block", "place"); //gets amount 
+            if (amount == null) return; //retuns nothing if amount is not specified
+
+            if (block.CurrentStack >= amount) //if stack is more than amount
+            {
+                block.CurrentStack -= amount.Value; //remove the amount from stack
+                Console.WriteLine($"Placed {amount} {block.Name}. Remaining: {block.CurrentStack}");
+                if (block.CurrentStack == 0) //if stack is 0
+                {
+                    inventory.DropItem(block); //delete item
+                }
+            }
+            else
+            {
+                Console.WriteLine("Not enough to place that amount.");
+            }
+            PauseAndContinue();
+        }
+
+        //handles consumable usage (consuming items)
+        void HandleConsumableUsage(InventoryClass inventory, Consumable consumable)
+        {
+            int? amount = GetAmountInput(consumable.CurrentStack, consumable.MaxStack, "consumable", "consume"); //gets amount
+            if (amount == null) return; //if not specified return null
+
+            if (consumable.CurrentStack >= amount) //if current stack more than amount
+            {
+                consumable.CurrentStack -= amount.Value; //remove amount from stack
+                Console.WriteLine($"Consumed {amount} {consumable.Name}. Remaining: {consumable.CurrentStack}");
+                if (consumable.CurrentStack == 0) //if stack is 0
+                {
+                    inventory.DropItem(consumable); //removes item
+                }
+            }
+            else
+            {
+                Console.WriteLine("Not enough to consume that amount.");
+            }
+            PauseAndContinue();
+        }
+
+        //handles block pickup
+        void HandleBlockPickup(InventoryClass inventory, Block block)
+        {
+            bool isTruee = true;
+            while (isTruee)
+            {
+                int? amount = GetAmountInput(block.CurrentStack, block.MaxStack, "block", "pick up"); //gets the amount. can be either null or an int
+                if (amount == null) //if amount not specified then exit loop
+                {
+                    isTruee = false;
+                    continue;
+                }
+
+                if (block.CurrentStack >= amount) //if currentstack more or equal than amount selected
+                {
+                    block.CurrentStack -= amount.Value; //removes the amount from the stack
+                    Block pickedBlock = new Block(block.Id, block.Name, block.BlockResistance, amount.Value); //copies a new block
+                    Console.WriteLine($"You picked up {amount} {block.Name}. Remaining: {block.CurrentStack}"); //writes it in console
+                    inventory.PickUpItem(pickedBlock); //picks up item
+                    if (block.CurrentStack == 0) //if item reaches 0
+                    {
+                        itemsForPickingUp = itemsForPickingUp.Where(item => item != block).ToArray(); //removes the item
+                    }
+                    isTruee = false;
+                }
+                else
+                {
+                    Console.WriteLine($"Not enough blocks available. Press any key to try again");
+                    Console.WriteLine($"Current stack {block.CurrentStack}/{block.MaxStack}");
+                    Console.ReadLine();
+                }
+            }
+        }
+
+        //handles consumable pickup
+        void handleConsumablePickup(InventoryClass inventory, Consumable consumable) //takes inventory and consumable and input
+        {
+            bool isTruee = true;
+            while (isTruee) //while true
+            {
+                int? amount = GetAmountInput(consumable.CurrentStack, consumable.MaxStack, "consumable", "pick up"); //takes amount
+                if (amount == null)  //if false set bool to false 
+                {
+                    isTruee = false;
+                    continue;
+                }
+
+                if (consumable.CurrentStack >= amount) //if stack is bigger then amount run the logic
+                {
+                    consumable.CurrentStack -= amount.Value; //removes current stack with amount
+                    Consumable pickedConsumable = new Consumable(consumable.Id, consumable.Name, amount.Value); //creates a new item consumable with the amount chosen
+                    Console.WriteLine($"You picked up {amount} {consumable.Name}. Remaining: {consumable.CurrentStack}"); //displays it
+                    inventory.PickUpItem(pickedConsumable); //add that item to li´st
+                    if (consumable.CurrentStack == 0) //if stack is 0
+                    {
+                        itemsForPickingUp = itemsForPickingUp.Where(item => item != consumable).ToArray(); //remove it
+                    }
+                    isTruee = false;
+                }
+                else
+                {
+                    Console.WriteLine($"Not enough consumables available. Press any key to try again");
+                    Console.WriteLine($"Current stack {consumable.CurrentStack}/{consumable.MaxStack}");
+                    Console.ReadLine();
+                }
+            }
+        }
+
+        //handles dropping stackable items (blocks or consumables)
+        void HandleStackableItemDrop(InventoryClass inventory, Item item, string itemType)
+        {
+            int? amount = GetAmountInput(item.CurrentStack, item.MaxStack, itemType, "drop"); //gets amount. int? tells that it can be either a null or int
+            if (amount == null) return; //if null return nothing
+
+            if (item.CurrentStack >= amount) //logic if currentstack is more than amount
+            {
+                item.CurrentStack -= amount.Value; //remove currentstack with amount value
+                Console.WriteLine($"Dropped {amount} {item.Name}. Remaining: {item.CurrentStack}");
+                if (item.CurrentStack == 0) //if item contains 0 of its items. then remove it from list
+                {
+                    inventory.DropItem(item); //deletes the item
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Not enough to drop that amount.");
+            }
+            PauseAndContinue();
+        }
+
+        //checks if the user wants to go back
+        bool CheckGoBackInput(string input)
+        {
+            if (input.Equals("x", StringComparison.OrdinalIgnoreCase)) //if input is either capital or small X
+            {
+                Console.Clear();
+                return false;
+            }
+            return true;
+        }
+
+        //pauses and waits for user input to continue
+        void PauseAndContinue()
+        {
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadLine();
+        }
+
+    }
     }
 }
